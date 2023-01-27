@@ -1,10 +1,13 @@
 import React from 'react'
 import Banner from './Banner'
+import Footer from './Footer'
+import Operations from './Operations'
 
 const LandingPage = () => {
   return (
-    <div>
+    <div className=' '>
       <Banner/>
+      <Operations/>
     </div>
   )
 }

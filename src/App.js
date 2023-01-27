@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import  { Toaster } from 'react-hot-toast';
 import { Route, Routes } from "react-router-dom";
 import './App.css';
+import Footer from './components/Footer';
 import LandingPage from './components/LandingPage';
 import NavBar from './components/NavBar';
 import Try from './components/Try';
@@ -25,6 +26,8 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/about" element={<LandingPage />} />
         </Routes>
+      <Footer/>
+
       <Toaster />
     </div>
   );

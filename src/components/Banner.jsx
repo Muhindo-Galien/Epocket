@@ -11,9 +11,9 @@ const Banner = () => {
               <h1 className='font-bold text-4xl sm:text-5xl pb-4'>We make it easier</h1>
               <h4 className='text-base sm:text-lg font-bold sm:font-bold  '>Send and Swap Using our E-pocket app</h4>
               <p className='text-sm sm:text-base'>
-              A digital wallet that allows users to store, send, and receive cryptocurrency and other digital assets on the decentralized web.
+              A digital wallet that allows users to swap, send, & receive cryptocurrency & other digital assets on the decentralized web.
               </p>
-              <div className='flex gap-4 my-4'>
+              <div className='flex gap-4 my-4 justify-center sm:justify-start'>
                 <button className='bg-gray-50 text-gray-900 px-4 py-2 rounded cursor-pointer bg-gray-900 text-white'>Send</button>
                 <button className='bg-gray-50 text-gray-900 px-4 py-2 rounded cursor-pointer'>Swap</button>
               </div>
