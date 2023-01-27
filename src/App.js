@@ -1,14 +1,16 @@
 import React, { useEffect } from 'react'
 import  { Toaster } from 'react-hot-toast';
-
+import { Route, Routes } from "react-router-dom";
 import './App.css';
+import LandingPage from './components/LandingPage';
+import NavBar from './components/NavBar';
 import Try from './components/Try';
 import { getEtheriumContract,getTxs ,isWallectConnected } from './Services';
 
 function App() {
   useEffect(() => {
+     isWallectConnected()
     const loadData  = async()=>{
-      await isWallectConnected()
       await getEtheriumContract()
       await getTxs()
     }
@@ -17,14 +19,12 @@ function App() {
   
  
   return (
-    <div className="App">
-      <br/>
-      
-      <br/>
-      <br/>
-      <br/>
-      <Try/>
-
+    <div className="max-4xl">
+        <NavBar/>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/about" element={<LandingPage />} />
+        </Routes>
       <Toaster />
     </div>
   );
