@@ -22,6 +22,16 @@ const connectWallet = async () => {
   }
 }
 
+const disconnectWallet = async () => {
+  const connectedAccount = getGlobalState('connectedAccount')
+  try {
+    if(connectedAccount){
+      setGlobalState('connectedAccount','')
+    }
+  } catch (error) {
+    console.log(error.message)
+  }
+}
 const isWallectConnected = async () => {
   // console.log('isWallectConnected');
   try {
@@ -114,5 +124,6 @@ export {
   getTxs,
   isWallectConnected,
   getEtheriumContract,
-  transfer
+  transfer,
+  disconnectWallet
 }
