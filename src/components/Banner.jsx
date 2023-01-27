@@ -9,7 +9,7 @@ const Banner = () => {
           <div className='flex flex-col sm:flex-row  items-center justify-between gap-4'>
             <div className='text-center sm:text-left w-full sm:w-4/5'>
               <h1 className='font-bold text-4xl sm:text-5xl pb-4'>We make it easier</h1>
-              <h4 className='text-base sm:text-lg font-bold sm:font-bold  '>Send and Swap Using our E-pocket app</h4>
+              <h4 className='text-base sm:text-lg font-bold sm:font-bold  '>Send and Swap tokens Using our E-pocket</h4>
               <p className='text-sm sm:text-base'>
               A digital wallet that allows users to swap, send, & receive cryptocurrency & other digital assets on the decentralized web.
               </p>
