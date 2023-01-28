@@ -4,7 +4,7 @@ const {setGlobalState, useGlobalState, getGlobalState }=createGlobalState({
   modal: 'scale-0',
   updateModal: 'scale-0',
   showModal: 'scale-0',
-  alert: { show: false, msg: '', color: '' },
+  started:false,
   loading: { show: false, msg: '' },
   connectedAccount: '',
   nft: null,

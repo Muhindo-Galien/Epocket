@@ -1,12 +1,14 @@
 import moment from 'moment'
 import React from 'react'
-import { connectWallet, getTxs, transfer } from '../Services'
+import { connectWallet, getTxs, performTransfer } from '../Services'
 import { truncate, useGlobalState } from '../store'
 
 const Try = () => {
   const [connectedAccount] = useGlobalState('connectedAccount')
   const [myOwnTxs] = useGlobalState('myOwnTxs')
   const [recieverTxs] = useGlobalState('recieverTxs')
+  console.log(recieverTxs);
+  
   console.log("myOwnTxs",myOwnTxs.length);
   console.log("recieverTxs",recieverTxs.length);
   
@@ -36,7 +38,7 @@ const Try = () => {
         <br />
         <input type="number" placeholder='1 Eth'/>
         <br />
-        <button onClick={transfer}> send</button>
+        <button onClick={performTransfer}> send</button>
         <div>
           
           <h2>Transaction history</h2>

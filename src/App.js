@@ -6,14 +6,15 @@ import Footer from './components/Footer';
 import LandingPage from './components/LandingPage';
 import NavBar from './components/NavBar';
 import Try from './components/Try';
-import { getEtheriumContract,getTxs ,isWallectConnected } from './Services';
+import { getEtheriumContract,getRecieverTxs,getTxs ,isWallectConnected } from './Services';
 
 function App() {
   useEffect(() => {
-     isWallectConnected()
     const loadData  = async()=>{
-      await getEtheriumContract()
+      await isWallectConnected()
       await getTxs()
+      await getEtheriumContract()
+      await getRecieverTxs()
     }
     loadData()
   }, [])
@@ -24,7 +25,7 @@ function App() {
         <NavBar/>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/about" element={<LandingPage />} />
+          <Route path="/about" element={<Try />} />
         </Routes>
       <Footer/>
 

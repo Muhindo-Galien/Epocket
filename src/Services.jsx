@@ -3,7 +3,9 @@ import Web3 from 'web3'
 import { getGlobalState, setGlobalState, useGlobalState } from './store'
 import { toast } from 'react-hot-toast'
 import abi from './abis/Epocket.json'
-export const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
+// export const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
+export const contractAddress = '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'
+
 const contractABI = abi.abi
 
 const { ethereum } = window
@@ -16,7 +18,6 @@ const connectWallet = async () => {
     if (!ethereum) return console.log('Please install Metamask')
     const accounts = await ethereum.request({ method: 'eth_requestAccounts' })
     setGlobalState('connectedAccount', accounts[0]?.toLowerCase())
-    window.location.reload()
   } catch (error) {
     console.log(error.message)
   }
@@ -33,7 +34,6 @@ const disconnectWallet = async () => {
   }
 }
 const isWallectConnected = async () => {
-  // console.log('isWallectConnected');
   try {
     if (!ethereum) return console.log('Please install Metamask')
     const accounts = await ethereum.request({ method: 'eth_accounts' })
@@ -74,16 +74,22 @@ const getEtheriumContract = async () => {
     return getGlobalState('contract')
   }
 }
-const transfer = async () => {
+const performTransfer = async (amount,name,reciever) => {
   try {
   const sender = getGlobalState('connectedAccount')
-  const value = window.web3.utils.toWei('7', 'ether')
+  const value = window.web3.utils.toWei(amount, 'ether')
   if (!ethereum) console.log('Please install Metamask')
     const contract = await getEtheriumContract()
-    const reciever = '0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65'
-     await contract.methods.transferFund(reciever,"Bella").send({ from: sender, value: value })
+    toast.success('Transfer stargeted...')
+    setGlobalState('started',true)
+    const tx= await contract.methods.transferFund(reciever,name).send({ from: sender, value: value })
+    toast.success('Token sent successfully')
+    window.location.reload()
+    setGlobalState('started',false)
 } catch (error) {
   console.log(error);
+  setGlobalState('started',false)
+  toast.error('Transfer Failed')
 }
 }
 
@@ -103,27 +109,40 @@ const getTxs = async () => {
   const sender = getGlobalState('connectedAccount')
   if (!ethereum) console.log('Please install Metamask')
     const allTxs = []
-    const allRecieverTxs = []
     const contract = await getEtheriumContract()
    
     const transactionNumber = await contract.methods.transactionCount(sender).call()
     for(let i = 0; i < transactionNumber; i++){
         const tx = await contract.methods.myTransactions(sender,i+1).call()
-        console.log(tx);
-          if(sender ===  tx.reciever){
-            allRecieverTxs.push(tx)
-          }
+        // console.log(tx);
+          
         allTxs.push(tx)
     }
-    setGlobalState('recieverTxs',structuredTxs(allRecieverTxs))
     setGlobalState('myOwnTxs',structuredTxs(allTxs));  
+  }
+  
+  async function getRecieverTxs(){
+    const sender = getGlobalState('connectedAccount')
+    if (!ethereum) console.log('Please install Metamask')
+    const contract = await getEtheriumContract()
+    const txs = await contract.methods.getAllContracTxs().call()
+    console.log(txs.length);
+    const allRecieverTxs = []
+    for(let i = 0; i < txs?.length; i++){
+      if(sender ===  (txs[i].reciever).toLowerCase()){
+        allRecieverTxs.push(txs[i]);
+        }
+        
+      
+  }
+      setGlobalState('recieverTxs',structuredTxs(allRecieverTxs))
 }
-
 export {
   connectWallet,
   getTxs,
   isWallectConnected,
   getEtheriumContract,
-  transfer,
-  disconnectWallet
+  performTransfer,
+  disconnectWallet,
+  getRecieverTxs
 }

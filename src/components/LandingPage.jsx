@@ -1,6 +1,5 @@
 import React from 'react'
 import Banner from './Banner'
-import Footer from './Footer'
 import Operations from './Operations'
 
 const LandingPage = () => {
@@ -8,6 +7,7 @@ const LandingPage = () => {
     <div className=' '>
       <Banner/>
       <Operations/>
+      
     </div>
   )
 }
