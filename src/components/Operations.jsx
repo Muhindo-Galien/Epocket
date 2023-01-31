@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { toast } from 'react-hot-toast'
+import React, {useState } from 'react'
 import { connectWallet, performTransfer } from '../Services'
 import { useGlobalState } from '../store'
 import Transaction from './Transaction'

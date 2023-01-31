@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Identicon from 'react-identicons'
 import { Link } from 'react-router-dom'
 import { connectWallet } from '../Services'

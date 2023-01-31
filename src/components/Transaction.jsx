@@ -1,6 +1,6 @@
 import moment from 'moment'
 import React from 'react'
-import { truncate, useGlobalState } from '../store'
+import { truncate} from '../store'
 
 const Transaction = ({data,sent}) => {
   return (

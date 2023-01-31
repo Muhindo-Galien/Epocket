@@ -14,7 +14,6 @@ const connectWallet = async () => {
     if (!ethereum) return console.log('Please install Metamask')
     const accounts = await ethereum.request({ method: 'eth_requestAccounts' })
     setGlobalState('connectedAccount', accounts[0]?.toLowerCase())
-    window.location.reload()
   } catch (error) {
     console.log(error.message)
   }
@@ -32,7 +31,6 @@ const isWallectConnected = async () => {
     window.ethereum.on('accountsChanged', async () => {
       setGlobalState('connectedAccount', accounts[0]?.toLowerCase())
       await isWallectConnected()
-      window.location.reload()
     })
     
     if (accounts.length) {

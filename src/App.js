@@ -6,7 +6,6 @@ import Announcement from './components/Announcement';
 import Footer from './components/Footer';
 import LandingPage from './components/LandingPage';
 import NavBar from './components/NavBar';
-import Try from './components/Try';
 import {getRecieverTxs,getTxs ,getUserBalance,isWallectConnected } from './Services';
 
 function App() {
@@ -29,7 +28,6 @@ function App() {
         {loaded?
         <Routes>
           <Route path="/" element={<LandingPage loaded={loaded}/>} />
-          <Route path="/about" element={<Try />} />
         </Routes>
         :(
           <Announcement/>
