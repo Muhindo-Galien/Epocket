@@ -7,6 +7,7 @@ const {setGlobalState, useGlobalState, getGlobalState }=createGlobalState({
   started:false,
   loading: { show: false, msg: '' },
   connectedAccount: '',
+  connectedAccountBalance: '',
   nft: null,
   myOwnTxs: [],
   recieverTxs: [],

@@ -2,11 +2,11 @@ import React from 'react'
 import Banner from './Banner'
 import Operations from './Operations'
 
-const LandingPage = () => {
+const LandingPage = ({loaded}) => {
   return (
-    <div className=' '>
+    <div >
       <Banner/>
-      <Operations/>
+      <Operations loaded={loaded}/>
       
     </div>
   )

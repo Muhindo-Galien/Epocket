@@ -1,20 +1,23 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import  { Toaster } from 'react-hot-toast';
 import { Route, Routes } from "react-router-dom";
 import './App.css';
+import Announcement from './components/Announcement';
 import Footer from './components/Footer';
 import LandingPage from './components/LandingPage';
 import NavBar from './components/NavBar';
 import Try from './components/Try';
-import { getEtheriumContract,getRecieverTxs,getTxs ,isWallectConnected } from './Services';
+import {getRecieverTxs,getTxs ,getUserBalance,isWallectConnected } from './Services';
 
 function App() {
+  const [loaded,setLoaded]=useState(false)
   useEffect(() => {
     const loadData  = async()=>{
       await isWallectConnected()
       await getTxs()
-      await getEtheriumContract()
+      await getUserBalance()
       await getRecieverTxs()
+      setLoaded(true)
     }
     loadData()
   }, [])
@@ -23,10 +26,14 @@ function App() {
   return (
     <div className="max-4xl">
         <NavBar/>
+        {loaded?
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={<LandingPage loaded={loaded}/>} />
           <Route path="/about" element={<Try />} />
         </Routes>
+        :(
+          <Announcement/>
+        )}
       <Footer/>
 
       <Toaster />
