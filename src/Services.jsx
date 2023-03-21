@@ -2,7 +2,9 @@ import Web3 from 'web3';
 import { getGlobalState, setGlobalState } from './store';
 import { toast } from 'react-hot-toast';
 import abi from './abis/Epocket.json';
-export const contractAddress = '0x51474B65Da25CA89ABBC0362ffD79fF623f2e412';
+import linkErcAbi from './abis/LinkAbi.json';
+import { ethers } from 'ethers';
+export const contractAddress = '0x0E07d724Ab4157040209C076bb9C7DbE70C6e398';
 
 const { ethereum } = window;
 window.web3 = new Web3(ethereum);
@@ -42,10 +44,88 @@ const isWallectConnected = async () => {
 
       setGlobalState('connectedAccount', '');
     }
+    const chainID =  await window.ethereum.request({method: 'eth_chainId'})
+    console.log('chainID: ', chainID);
+    if (chainID == "0xaa36a7" ){
+      setGlobalState('currentChain', 'Sepolia');
+      setGlobalState('currency', 'SepoliaEther');
+      setGlobalState('symbol', 'sEth');
+    }
+    else{
+      toast.error('Can only access Sepolia')
+      setGlobalState('connectedAccount', '');
+    }
   } catch (error) {
     reportError(error);
   }
 };
+
+// ============================================
+const ERCABI = [
+  "function balanceOf(address) view returns (uint)",
+  "function transfer(address to, uint amount) returns (bool)",
+  "function symbol() external view returns (string memory)",
+  "function name() external view returns (string memory)"
+]
+
+
+// Contracts 
+const ERCContract = async () => {
+  const connectedAccount = getGlobalState('connectedAccount');
+  const ercTokenAddress = getGlobalState('ercTokenAddress');
+
+  if (connectedAccount) {
+    const ercContract = new window.web3.eth.Contract(linkErcAbi.abi, ercTokenAddress)
+    setGlobalState('ercContract', await ercContract);
+    console.log('Here ercContract contract: ',ercContract);
+    return ercContract;
+  } else {
+    return getGlobalState('contract');
+  }
+};
+
+// ===========================================
+const selectToken = async () => {
+  try {
+  const currentUser = getGlobalState('connectedAccount');
+  setGlobalState('ercLoading', true);
+  const contract = await ERCContract();
+  const name = await contract.methods.name().call();
+  const balance = await contract.methods.balanceOf(currentUser).call();
+  console.log('balance : ', balance);
+  const symbol = await contract.methods.symbol().call();
+  setGlobalState(
+    'connectedAccountBalance',
+    window.web3.utils.fromWei(balance, 'ether')
+  );
+  setGlobalState('symbol', symbol);
+  setGlobalState('currency', name);
+  setGlobalState('tokenChanged', true);
+  setGlobalState('ercLoading', false);
+
+  } catch(error) {
+    toast.error(error.message)
+    setGlobalState('ercLoading', false);
+  }
+}
+
+const removeToken = async () => {
+  const currentChain = getGlobalState('currentChain');
+  try {
+    if(currentChain == "Sepolia") {
+            setGlobalState('currency', 'SepoliaEther');
+
+      setGlobalState('symbol',"sEth")
+      }  
+    setGlobalState( 'ercTokenAddress', '');
+    setGlobalState('showErc', false);
+    setGlobalState('tokenChanged', false);
+    getUserBalance();
+  } catch(error) {
+    toast.error(error.message)
+  }
+}
+// ============================================
 
 const getEtheriumContract = async () => {
   const connectedAccount = getGlobalState('connectedAccount');
@@ -124,11 +204,13 @@ async function getRecieverTxs() {
 }
 
 const getUserBalance = async () => {
-  const contract = await getEtheriumContract();
-  const userBalance = await contract.methods.getBalanceAccount().call();
+  const web3 = window.web3;
+  const currentUser = getGlobalState('connectedAccount');
+  const balance =await web3.eth.getBalance(currentUser)
+
   setGlobalState(
     'connectedAccountBalance',
-    window.web3.utils.fromWei(userBalance)
+    window.web3.utils.fromWei(balance, 'ether')
   );
 };
 export {
@@ -139,4 +221,6 @@ export {
   performTransfer,
   getRecieverTxs,
   getUserBalance,
+  selectToken,
+  removeToken,
 };

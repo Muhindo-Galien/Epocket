@@ -8,7 +8,7 @@ import LandingPage from './components/LandingPage';
 import Loader from './components/Loader';
 import NavBar from './components/NavBar';
 
-import {getRecieverTxs,getTxs ,getUserBalance,isWallectConnected } from './Services';
+import { getRecieverTxs,getTxs ,getUserBalance,isWallectConnected } from './Services';
 import { useGlobalState } from './store';
 
 function App() {

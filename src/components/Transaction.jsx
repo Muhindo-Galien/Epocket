@@ -6,7 +6,7 @@ const Transaction = ({data,sent}) => {
   return (
     <>
      {data.length <=0?(
-      <p className='text-lg font-semibold text-center sm:text-left sm:ml-8'>
+      <p className='text-lg font-semibold text-center 10'>
        {sent?('No sent tx found!'):('No recieved tx found!')} 
       </p>
   ):(
