@@ -3,10 +3,12 @@ import Identicon from 'react-identicons';
 import { Link } from 'react-router-dom';
 import { connectWallet } from '../Services';
 import { truncate, useGlobalState } from '../store';
+import { FaEthereum } from 'react-icons/fa';
 
 const NavBar = () => {
   const [connectedAccount] = useGlobalState('connectedAccount');
   const [connectedAccountBalance] = useGlobalState('connectedAccountBalance');
+  const [currentChain] = useGlobalState('currentChain');
 
   return (
     <div className=' sm:px-8 bg-blue-500 z-50 mx-auto w-full fixed shadow-sm text-gray-50'>
@@ -32,13 +34,13 @@ const NavBar = () => {
         <div className='flex gap-4 items-center'>
           {connectedAccount ? (
             <div className='flex items-center gap-2'>
-              <button
-                className='bg-gray-800 font-semibold  px-3 py-2 rounded text-gray-50 my-1'
-                disabled
-              >
-                {' '}
-                {Number(connectedAccountBalance).toFixed(2)} ETH
-              </button>
+              { currentChain?
+                (
+                  <div className='flex gap-1 items-center bg-blue-500 shadow-lg px-3 py-2 rounded-full'>
+                  <FaEthereum className='text-2xl bg-blue-400  rounded-full p-0.5'/> <span className="font-normal">{currentChain} </span> 
+                  </div>
+                  ): null
+              }
               <button
                 disabled
                 type='button'
@@ -55,7 +57,7 @@ const NavBar = () => {
           ) : (
             <button
               type='button'
-              className='bg-green-50 font-medium  px-3 py-2 rounded text-gray-900'
+              className='bg-green-50 font-medium  px-3 py-2 text-gray-900 rounded'
               onClick={() => connectWallet()}
             >
               Connect Wallet
