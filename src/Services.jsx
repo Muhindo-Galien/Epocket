@@ -4,7 +4,7 @@ import { toast } from 'react-hot-toast';
 import abi from './abis/Epocket.json';
 import linkErcAbi from './abis/LinkAbi.json';
 import { ethers } from 'ethers';
-export const contractAddress = '0x0E07d724Ab4157040209C076bb9C7DbE70C6e398';
+export const contractAddress = '0x2FC92244bd4B3F35fB19b7b3B93c78cE9A2D2821';
 
 const { ethereum } = window;
 window.web3 = new Web3(ethereum);
@@ -45,11 +45,11 @@ const isWallectConnected = async () => {
       setGlobalState('connectedAccount', '');
     }
     const chainID =  await window.ethereum.request({method: 'eth_chainId'})
-    console.log('chainID: ', chainID);
     if (chainID == "0xaa36a7" ){
       setGlobalState('currentChain', 'Sepolia');
       setGlobalState('currency', 'SepoliaEther');
       setGlobalState('symbol', 'sEth');
+      setGlobalState('explorer', 'https://sepolia.etherscan.io/tx');
     }
     else{
       toast.error('Can only access Sepolia')
@@ -60,15 +60,6 @@ const isWallectConnected = async () => {
   }
 };
 
-// ============================================
-const ERCABI = [
-  "function balanceOf(address) view returns (uint)",
-  "function transfer(address to, uint amount) returns (bool)",
-  "function symbol() external view returns (string memory)",
-  "function name() external view returns (string memory)"
-]
-
-
 // Contracts 
 const ERCContract = async () => {
   const connectedAccount = getGlobalState('connectedAccount');
@@ -77,7 +68,6 @@ const ERCContract = async () => {
   if (connectedAccount) {
     const ercContract = new window.web3.eth.Contract(linkErcAbi.abi, ercTokenAddress)
     setGlobalState('ercContract', await ercContract);
-    console.log('Here ercContract contract: ',ercContract);
     return ercContract;
   } else {
     return getGlobalState('contract');
@@ -92,7 +82,6 @@ const selectToken = async () => {
   const contract = await ERCContract();
   const name = await contract.methods.name().call();
   const balance = await contract.methods.balanceOf(currentUser).call();
-  console.log('balance : ', balance);
   const symbol = await contract.methods.symbol().call();
   setGlobalState(
     'connectedAccountBalance',
@@ -129,7 +118,7 @@ const removeToken = async () => {
 
 const getEtheriumContract = async () => {
   const connectedAccount = getGlobalState('connectedAccount');
-
+  
   if (connectedAccount) {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi.abi, contractAddress);
@@ -140,26 +129,77 @@ const getEtheriumContract = async () => {
     return getGlobalState('contract');
   }
 };
-const performTransfer = async (amount, name, reciever) => {
-  try {
+  // ============================================
+  const transferAmount = async () => {
     const sender = getGlobalState('connectedAccount');
-    const value = window.web3.utils.toWei(amount, 'ether');
-    if (!ethereum) console.log('Please install Metamask');
-    const contract = await getEtheriumContract();
-    toast.success('Transfer started...');
-    setGlobalState('started', true);
-    const tx = await contract.methods
-      .transferFund(reciever, name)
-      .send({ from: sender, value: value });
-    toast.success('Token sent successfully');
-    window.location.reload();
-    setGlobalState('started', false);
-  } catch (error) {
-    console.log(error);
-    setGlobalState('started', false);
-    toast.error('Transfer Failed');
-  }
+    const tokenChanged = getGlobalState('tokenChanged');
+    const recipientAddress = getGlobalState('recipientAddress');
+    const symbol= getGlobalState('symbol')
+    setGlobalState('txLoading',true)
+    const amount = getGlobalState('amount');
+    const value = window.web3.utils.toWei(amount.toString(), 'ether');
+    const contract = await ERCContract();
+    const epocketContract = await getEtheriumContract();
+
+    try {
+      if(tokenChanged) {
+        const tx = await contract.methods.transfer(recipientAddress, value).send({from: sender});
+        selectToken();
+        setGlobalState('recentTx',{
+          txhash: tx.transactionHash,
+          from: sender,
+          to: recipientAddress,
+          amount: amount,
+          symbol: symbol
+        })
+  
+        setGlobalState('showRecentTx',true);
+        setGlobalState('recipientAddress','');
+        setGlobalState('ercTokenAddress','');
+
+  
+      } else {
+        const tx = await epocketContract.methods
+        ._transfer(recipientAddress, symbol)
+        .send({ from: sender, value: value });
+        
+        getUserBalance();
+        setGlobalState('showRecentTx',true);
+
+      }
+  
+      toast.success("Transaction Sucessfull!")
+      setGlobalState('amount','');
+      setTimeout(function() {
+        setGlobalState('showRecentTx',false);
+        window.location.reload()
+        
+      }, 6000);
+
+    } catch (error) {
+      toast.error(error.message)
+    }
+    setGlobalState('txLoading',false);
+    
+  // =============================================
 };
+const saveTx = async () => {
+  const recentTx = getGlobalState('recentTx');
+
+  setGlobalState('saveTxLoad',true);
+  const value = window.web3.utils.toWei(recentTx.amount, 'ether');
+  try {
+    const contract = await getEtheriumContract()
+    await contract.methods.saveTx(recentTx.from, recentTx.to, value, recentTx.symbol).call();    
+    toast.success("Transaction Saved Sucessfully!")
+
+  } catch (error) {
+    toast.error(error.message)
+  }
+  
+  setGlobalState('showRecentTx',false);
+  setGlobalState('saveTxLoad',false);
+}
 
 const structuredTxs = (txs) => {
   return txs
@@ -213,14 +253,40 @@ const getUserBalance = async () => {
     window.web3.utils.fromWei(balance, 'ether')
   );
 };
+
+
+const addRecipient = async () => {
+  const recipientName = getGlobalState('recipientName');
+  const recipientAddress = getGlobalState('recipientAddress');
+  try {
+    setGlobalState('participantLoading', true)
+    const contact = await getEtheriumContract()
+    const tx = await contact.methods.addRecipient(recipientAddress, recipientName).call();
+    toast.success("Recipient Saved Sucessfully!")  
+    setGlobalState(recipientAddress,'');
+    setGlobalState(recipientName,'');    
+    setGlobalState('participantLoading',false);    
+  } catch (error) {
+    toast.error(error.message)
+    setGlobalState('participantLoading',false);    
+    
+  }
+
+  // let nextnum = num + 1;
+  // setNum(nextnum);
+
+}
 export {
   connectWallet,
   getTxs,
   isWallectConnected,
   getEtheriumContract,
-  performTransfer,
   getRecieverTxs,
   getUserBalance,
   selectToken,
   removeToken,
-};
+  transferAmount,
+  saveTx,
+  addRecipient
+}
+
