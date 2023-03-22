@@ -6,7 +6,7 @@ const Transaction = ({data,sent}) => {
   return (
     <>
      {data.length <=0?(
-      <p className='text-lg font-semibold text-center 10'>
+      <p className='text-lg font-semibold text-center sm:text-left sm:ml-8'>
        {sent?('No sent tx found!'):('No recieved tx found!')} 
       </p>
   ):(
@@ -30,7 +30,7 @@ const Transaction = ({data,sent}) => {
           </div>
           <div className="flex justify-between">
             <h2><span className='font-bold text-base'>Amount: </span> {tx.amount} <span className='font-bold text-base'>ETH</span></h2>
-            <h2><span className='font-bold text-base'> Name: </span> {tx.namOfTheReciever}</h2>
+            <h2><span className='font-bold text-base'>  </span> {tx.namOfTheReciever}</h2>
           </div>
       </div>
       )
